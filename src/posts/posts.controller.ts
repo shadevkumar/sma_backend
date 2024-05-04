@@ -9,6 +9,7 @@ import {
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FollowService } from 'src/follow/follow.service';
+import { GetUser } from 'src/common/decorators/user.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -28,7 +29,6 @@ export class PostsController {
       authorId: string;
     },
   ) {
-    console.log('Creating post with data:', createPostDto);
     try {
       const newPost = await this.postsService.create(createPostDto);
       return newPost;
@@ -41,11 +41,9 @@ export class PostsController {
 //get posts of a user
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAllByAuthorId(@Request() req) {
-    const authorId = req.user.sub; 
-    console.log('Fetching all posts for authorId:', authorId);
+  async findAllByAuthorId(@GetUser('sub') userId: string,) {
     try {
-      const posts = await this.postsService.findAllByAuthorId(authorId);
+      const posts = await this.postsService.findAllByAuthorId(userId);
       return posts;
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -56,8 +54,7 @@ export class PostsController {
   //get posts of users followed by current user
   @UseGuards(JwtAuthGuard)
   @Get('following')
-  async findAllFollowingPosts(@Request() req) {
-    const userId = req.user.sub;
+  async findAllFollowingPosts(@GetUser('sub') userId: string,) {
     try {
       const followingIds = await this.followService.findAllFollowingIds(userId);
       const posts = await this.postsService.findAllByAuthorsIds(followingIds);

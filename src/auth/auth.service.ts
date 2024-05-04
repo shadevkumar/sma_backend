@@ -36,10 +36,10 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findOne(username);
     if (!user) {
-      return null; 
+      return null;
     }
     if (await bcrypt.compare(password, user.password)) {
-      return user; 
+      return user;
     }
     return null;
   }
@@ -58,7 +58,6 @@ export class AuthService {
       loginUserDto.username,
       loginUserDto.password,
     );
-    console.log('User after lo0gin', user);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -83,10 +82,12 @@ export class AuthService {
     try {
       const payload = this.refreshJwtService.verify(refreshToken);
       const user = await this.usersService.findById(payload.sub);
-      if (
-        !user ||
-        !(await this.compareTokens(refreshToken, user.refreshToken))
-      ) {
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+
+      if (!(await this.compareTokens(refreshToken, user.refreshToken))) {
         throw new UnauthorizedException('Invalid refresh token');
       }
       const newAccessToken = this.jwtService.sign({
@@ -105,6 +106,7 @@ export class AuthService {
       );
       return { access_token: newAccessToken, refresh_token: newRefreshToken };
     } catch (e) {
+      console.error('Error during token refresh:', e);
       throw new UnauthorizedException('Invalid refresh token');
     }
   }

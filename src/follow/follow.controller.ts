@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FollowService } from './follow.service';
+import { GetUser } from 'src/common/decorators/user.decorator';
 
 @Controller('follow')
 export class FollowController {
@@ -19,10 +20,8 @@ export class FollowController {
   @Post('request/:followingId')
   async sendFollowRequest(
     @Param('followingId') followingId: string,
-    @Request() req: any,
+    @GetUser('sub') userId: string,
   ) {
-    const userId = req.user.sub;
-    console.log('userid and followingId', userId, followingId);
     return this.followService.sendFollowRequest(userId, followingId);
   }
 
@@ -30,7 +29,6 @@ export class FollowController {
   @UseGuards(JwtAuthGuard)
   @Post('accept/:followId')
   async acceptFollowRequest(@Param('followId') followId: string) {
-    console.log('Inside accept');
     return this.followService.acceptFollowRequest(followId);
   }
 
@@ -46,33 +44,29 @@ export class FollowController {
   @Delete(':followingId')
   async unfollow(
     @Param('followingId') followingId: string,
-    @Request() req: any,
+    @GetUser('sub') userId: string,
   ) {
-    const userId = req.user.sub;
     return this.followService.unfollow(userId, followingId);
   }
 
   //get users who are unfollowed by current user
   @UseGuards(JwtAuthGuard)
   @Get('unfollowed')
-  async getUnfollowedUsers(@Request() req: any) {
-    const userId = req.user.sub;
+  async getUnfollowedUsers(@GetUser('sub') userId: string) {
     return this.followService.getUnfollowedUsers(userId);
   }
 
-  //get followings of current users 
+  //get followings of current users
   @UseGuards(JwtAuthGuard)
   @Get('followed')
-  async getFollowedUsers(@Request() req: any) {
-    const userId = req.user.sub;
+  async getFollowedUsers(@GetUser('sub') userId: string) {
     return this.followService.getFollowedUsers(userId);
   }
 
   //get follow requests of users for current user
   @UseGuards(JwtAuthGuard)
   @Get('requests')
-  async getFollowRequests(@Request() req: any) {
-    const userId = req.user.sub;
+  async getFollowRequests(@GetUser('sub') userId: string) {
     return this.followService.getFollowRequests(userId);
   }
 }

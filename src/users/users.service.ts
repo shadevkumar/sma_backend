@@ -14,7 +14,7 @@ export class UsersService {
 
     return createdUser.save();
   }
-  
+
   async findOne(username: string): Promise<User | undefined> {
     return this.userModel.findOne({ username }).exec();
   }
@@ -23,12 +23,16 @@ export class UsersService {
     return this.userModel.find().select('_id username').exec();
   }
 
-  async setRefreshToken(refreshToken: string, userId: string): Promise<void> {
+  async setRefreshToken(
+    hashedRefreshToken: string,
+    userId: string,
+  ): Promise<void> {
     const user = await this.userModel.findById(userId);
+
     if (!user) {
       throw new Error('User not found');
     }
-    user.refreshToken = refreshToken;
+    user.refreshToken = hashedRefreshToken;
     await user.save();
   }
 

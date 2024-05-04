@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import  { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { Post, PostDocument } from './schemas/post.schema';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class PostsService {
     try {
       const posts = await this.postModel
         .find({ author: authorId })
-        .populate('author')
+        .populate('author', 'username _id createdAt')
         .exec();
       return posts;
     } catch (error) {
@@ -42,15 +42,15 @@ export class PostsService {
 
   async findAllByAuthorsIds(authorsIds: string[]): Promise<Post[]> {
     try {
-        const posts = await this.postModel
-            .find({ author: { $in: authorsIds } })
-            .populate('author')
-            .exec();
-        return posts;
+      const posts = await this.postModel
+        .find({ author: { $in: authorsIds } })
+        .populate('author', 'username _id createdAt')
+        .sort({ createdAt: -1 })
+        .exec();
+      return posts;
     } catch (error) {
-        console.error('Service: Error fetching posts for authors:', error);
-        throw error;
+      console.error('Service: Error fetching posts for authors:', error);
+      throw error;
     }
-}
-  
+  }
 }

@@ -33,4 +33,4 @@ export class Follow extends Document {
 
 export type FollowDocument = Follow & Document;
 export const FollowSchema = SchemaFactory.createForClass(Follow);
-FollowSchema.index({ follower: 1, following: 1 }); // Compound index
+FollowSchema.index({ follower: 1, following: 1 });
