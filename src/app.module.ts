@@ -8,7 +8,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersService } from './users/users.service';
 import { User, UserSchema } from './users/schemas/user.schema';
-import { ProtectedController } from './protected.controller';
 import { PostsModule } from './posts/posts.module';
 import { PostsController } from './posts/posts.controller';
 import { FollowModule } from './follow/follow.module';
@@ -33,7 +32,6 @@ import { FollowController } from './follow/follow.controller';
   ],
   controllers: [
     AppController,
-    ProtectedController,
     PostsController,
     FollowController,
   ],

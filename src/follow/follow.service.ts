@@ -49,7 +49,6 @@ export class FollowService {
       throw new Error('Follow request not found or already accepted');
     }
 
-    console.log('Updated Follow:', updatedFollow);
     return updatedFollow;
   }
 
@@ -66,7 +65,9 @@ export class FollowService {
 
   async findAllFollowingIds(userId: string): Promise<string[]> {
     try {
-      const follows = await this.followModel.find({ follower: userId }).exec();
+      const follows = await this.followModel
+        .find({ follower: userId, status: FollowStatus.Accepted })
+        .exec();
       return follows.map((follow) => follow.following.toString());
     } catch (error) {
       console.error('Error fetching following IDs:', error);
@@ -101,7 +102,7 @@ export class FollowService {
         follower: currentUserId,
         status: FollowStatus.Accepted,
       })
-      .populate({path:'following',select: '_id username'})
+      .populate({ path: 'following', select: '_id username' })
       .exec();
 
     return follows.map((follow) => follow.following as any as User);
@@ -115,20 +116,15 @@ export class FollowService {
       })
       .select('following -_id');
 
-    console.log('Fetched Followed or Pending Users:', followedOrPendingUsers);
 
     // Filter out any undefined or invalid entries
     const followedOrPendingUserIds = followedOrPendingUsers
       .map((follow) => follow.following)
       .filter((following) => isValidObjectId(following));
 
-    console.log('Filtered User IDs:', followedOrPendingUserIds);
 
     // If no valid user IDs are found, return all users except the current user
     if (followedOrPendingUserIds.length === 0) {
-      console.log(
-        'No valid followed or pending user IDs found. Returning all users except the current user.',
-      );
       return this.userModel
         .find({
           _id: { $ne: currentUserId },

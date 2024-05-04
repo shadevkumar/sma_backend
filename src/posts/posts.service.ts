@@ -28,7 +28,6 @@ export class PostsService {
   }
 
   async findAllByAuthorId(authorId: string): Promise<Post[]> {
-    console.log('Service: Fetching all posts for authorId:', authorId);
     try {
       const posts = await this.postModel
         .find({ author: authorId })
@@ -42,7 +41,6 @@ export class PostsService {
   }
 
   async findAllByAuthorsIds(authorsIds: string[]): Promise<Post[]> {
-    console.log('Service: Fetching all posts for authors:', authorsIds);
     try {
         const posts = await this.postModel
             .find({ author: { $in: authorsIds } })

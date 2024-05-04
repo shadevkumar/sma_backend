@@ -17,6 +17,7 @@ export class PostsController {
     private readonly followService: FollowService,
   ) {}
 
+  //create post
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -37,10 +38,11 @@ export class PostsController {
     }
   }
 
+//get posts of a user
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAllByAuthorId(@Request() req) {
-    const authorId = req.user.sub; // Assuming 'sub' is where the user ID is stored in the JWT payload
+    const authorId = req.user.sub; 
     console.log('Fetching all posts for authorId:', authorId);
     try {
       const posts = await this.postsService.findAllByAuthorId(authorId);
@@ -51,11 +53,11 @@ export class PostsController {
     }
   }
 
+  //get posts of users followed by current user
   @UseGuards(JwtAuthGuard)
   @Get('following')
   async findAllFollowingPosts(@Request() req) {
     const userId = req.user.sub;
-    console.log('Fetching posts for all following users by userId:', userId);
     try {
       const followingIds = await this.followService.findAllFollowingIds(userId);
       const posts = await this.postsService.findAllByAuthorsIds(followingIds);

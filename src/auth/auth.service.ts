@@ -36,10 +36,10 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findOne(username);
     if (!user) {
-      return null; // Make sure it returns null if user is not found
+      return null; 
     }
     if (await bcrypt.compare(password, user.password)) {
-      return user; // Ensure this returns the complete user object
+      return user; 
     }
     return null;
   }
