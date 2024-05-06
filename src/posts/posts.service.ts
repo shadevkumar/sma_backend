@@ -7,6 +7,7 @@ import { Post, PostDocument } from './schemas/post.schema';
 export class PostsService {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
+  //create a post
   async create(createPostDto: {
     title: string;
     description: string;
@@ -27,6 +28,7 @@ export class PostsService {
     }
   }
 
+  //find post of a user
   async findAllByAuthorId(authorId: string): Promise<Post[]> {
     try {
       const posts = await this.postModel
@@ -40,6 +42,7 @@ export class PostsService {
     }
   }
 
+  //find posts for timeline
   async findAllByAuthorsIds(authorsIds: string[]): Promise<Post[]> {
     try {
       const posts = await this.postModel
